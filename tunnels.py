@@ -11,7 +11,8 @@ from clickclick import Action
 @click.argument('stack_name')
 @click.argument('port', type=int)
 @click.argument('jump_host')
-def cli(stack_name, port, jump_host):
+@click.option('--region')
+def cli(stack_name, port, jump_host, region):
     out = subprocess.check_output(['senza', 'instances', '--output=json', stack_name])
     data = json.loads(out.decode('utf-8'))
 
@@ -20,6 +21,8 @@ def cli(stack_name, port, jump_host):
         ip = row['private_ip']
         with Action('Adding IP {}..'.format(ip)):
             subprocess.call(['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip])
+            hostname = 'ip-{}.{}.compute.internal'.format(ip.replace('.', '-'), region)
+            subprocess.call(['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)])
             opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
 
     if not opts:
