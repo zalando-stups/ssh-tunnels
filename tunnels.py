@@ -18,12 +18,13 @@ def cli(stack_name, port, jump_host, region):
 
     opts = []
     for row in data:
-        ip = row['private_ip']
-        with Action('Adding IP {}..'.format(ip)):
-            subprocess.call(['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip])
-            hostname = 'ip-{}.{}.compute.internal'.format(ip.replace('.', '-'), region)
-            subprocess.call(['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)])
-            opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
+        if row['state'] == 'RUNNING':
+            ip = row['private_ip']
+            with Action('Adding IP {}..'.format(ip)):
+                subprocess.call(['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip])
+                hostname = 'ip-{}.{}.compute.internal'.format(ip.replace('.', '-'), region)
+                subprocess.call(['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)])
+                opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
 
     if not opts:
         raise click.UsageError('No instances for Senza stack "{}" found.'.format(stack_name))
