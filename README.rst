@@ -26,6 +26,6 @@ Connecting to a Cassandra cluster deployed with Senza:
 .. code-block:: bash
 
     $ piu odd-eu-west-1.myteam.example.org SSH tunnel to Cassandra for keyspace management
-    $ ./tunnels.py my-cassandra-stock 9042 odd-eu-west-1.myteam.example.org --region eu-west-1
+    $ ./tunnels.py my-cassandra 9042 odd-eu-west-1.myteam.example.org --region eu-west-1
     # open a new terminal
     $ cqlsh 172.31.141.1 # take one seed IP printed by tunnels.py
