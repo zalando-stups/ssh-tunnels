@@ -17,3 +17,15 @@ Cluster nodes can be accessed directly from your local machine.
 .. code-block:: bash
 
     $ ./tunnels.py my-senza-stack 9092 odd-eu-central-1.myteam.example.org --region eu-central-1
+
+Usage
+=====
+
+Connecting to a Cassandra cluster deployed with Senza:
+
+.. code-block:: bash
+
+    $ piu odd-eu-west-1.myteam.example.org SSH tunnel to Cassandra for keyspace management
+    $ ./tunnels.py my-cassandra-stock 9042 odd-eu-west-1.myteam.example.org --region eu-west-1
+    # open a new terminal
+    $ cqlsh 172.31.141.1 # take one seed IP printed by tunnels.py
