@@ -3,8 +3,18 @@
 import click
 import json
 import subprocess
+import sys
 
 from clickclick import Action
+
+
+if sys.platform == 'darwin':
+    add_if = lambda ip: ['sudo', 'ifconfig', 'lo0', 'alias', ip]
+    add_hosts = lambda ip, hostname: ['sudo', 'su', 'root', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
+else:
+    add_if = lambda ip: ['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip]
+    add_hosts = lambda ip, hostname: ['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
+
 
 
 @click.command()
@@ -22,9 +32,9 @@ def cli(stack_name, port, jump_host, region):
         if row['state'] == 'RUNNING':
             ip = row['private_ip']
             with Action('Adding IP {}..'.format(ip)):
-                subprocess.call(['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip])
+                subprocess.call(add_if(ip))
                 hostname = 'ip-{}.{}.compute.internal'.format(ip.replace('.', '-'), region)
-                subprocess.call(['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)])
+                subprocess.call(add_hosts(ip, hostname))
                 opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
                 endpoints.append('{}:{}'.format(ip, port))
 
