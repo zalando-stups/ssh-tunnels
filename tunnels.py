@@ -22,6 +22,7 @@ else:
 @click.argument('port', type=int)
 @click.argument('jump_host')
 @click.option('--region')
+@click.option('--user')
 def cli(stack_name, port, jump_host, region):
     out = subprocess.check_output(['senza', 'instances', '--output=json', stack_name])
     data = json.loads(out.decode('utf-8'))
@@ -44,7 +45,7 @@ def cli(stack_name, port, jump_host, region):
     click.secho('Endpoints: {}'.format(','.join(endpoints)), bold=True, fg='blue')
 
     click.secho('Starting SSH tunnels..', bold=True)
-    subprocess.call(['ssh'] + opts + [jump_host, 'while true; do echo -n .; sleep 60; done'])
+    subprocess.call(['ssh'] + opts + [user + '@' + jump_host, 'while true; do echo -n .; sleep 60; done'])
 
 if __name__ == '__main__':
     cli()
