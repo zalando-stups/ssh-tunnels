@@ -16,13 +16,12 @@ else:
     add_hosts = lambda ip, hostname: ['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
 
 
-
 @click.command()
 @click.argument('stack_name')
 @click.argument('port', type=int)
 @click.argument('jump_host')
 @click.option('--region')
-@click.option('-U','--user')
+@click.option('-U', '--user')
 def cli(stack_name, port, jump_host, region, user):
     out = subprocess.check_output(['senza', 'instances', '--output=json', stack_name])
     data = json.loads(out.decode('utf-8'))
@@ -45,11 +44,10 @@ def cli(stack_name, port, jump_host, region, user):
     click.secho('Endpoints: {}'.format(','.join(endpoints)), bold=True, fg='blue')
 
     click.secho('Starting SSH tunnels..', bold=True)
-    if user != None:
+    if user:
         ssh_connect = user + '@' + jump_host
     else:
         ssh_connect = jump_host
-    print(ssh_connect)
     subprocess.call(['ssh'] + opts + [ssh_connect, 'while true; do echo -n .; sleep 60; done'])
 
 if __name__ == '__main__':
