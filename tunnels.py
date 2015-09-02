@@ -23,10 +23,10 @@ else:
 @click.option('--region')
 @click.option('-U', '--user')
 def cli(stack_name, port, jump_host, region, user):
+    senza_cmd = ['senza', 'instances', '--output=json', stack_name]
     if region:
-        out = subprocess.check_output(['senza', 'instances', '--output=json', stack_name,'--region='+region])
-    else:
-        out = subprocess.check_output(['senza', 'instances', '--output=json', stack_name])
+        senza_cmd.append('--region=' + region)
+    out = subprocess.check_output(senza_cmd)
     data = json.loads(out.decode('utf-8'))
 
     opts = []
