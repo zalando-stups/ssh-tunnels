@@ -15,14 +15,25 @@ else:
     add_if = lambda ip: ['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip]
     add_hosts = lambda ip, hostname: ['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
 
-
+def parse_ports(s):
+    """Allows for input of multiple ports such as '8080,8090-8096,9000-9010'.
+    """
+    ranges = (x.split("-") for x in s.split(","))
+    return [i for r in ranges for i in range(int(r[0]), int(r[-1]) + 1)]
+    
 @click.command()
 @click.argument('stack_name')
-@click.argument('port', type=int)
+@click.argument('ports')
 @click.argument('jump_host')
 @click.option('--region')
 @click.option('-U', '--user')
-def cli(stack_name, port, jump_host, region, user):
+def cli(stack_name, ports, jump_host, region, user):
+    try:
+        portlist = parse_ports(ports)
+    except ValueError:
+        print('Could not parse ports: ' + ports)
+        return
+
     senza_cmd = ['senza', 'instances', '--output=json', stack_name]
     if region:
         senza_cmd.append('--region=' + region)
@@ -38,8 +49,9 @@ def cli(stack_name, port, jump_host, region, user):
                 subprocess.call(add_if(ip))
                 hostname = 'ip-{}.{}.compute.internal'.format(ip.replace('.', '-'), region)
                 subprocess.call(add_hosts(ip, hostname))
-                opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
-                endpoints.append('{}:{}'.format(ip, port))
+                for port in portlist:
+                    opts += ['-L', '{}:{}:{}:{}'.format(ip, port, ip, port)]
+                    endpoints.append('{}:{}'.format(ip, port))
 
     if not endpoints:
         raise click.UsageError('No instances for Senza stack "{}" found.'.format(stack_name))
