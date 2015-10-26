@@ -31,8 +31,7 @@ def cli(stack_name, ports, jump_host, region, user):
     try:
         portlist = parse_ports(ports)
     except ValueError:
-        print('Could not parse ports: ' + ports)
-        return
+        raise click.UsageError('Could not parse ports: ' + ports)
 
     senza_cmd = ['senza', 'instances', '--output=json', stack_name]
     if region:
