@@ -7,7 +7,6 @@ import sys
 
 from clickclick import Action
 
-
 if sys.platform == 'darwin':
     add_if = lambda ip: ['sudo', 'ifconfig', 'lo0', 'alias', ip]
     add_hosts = lambda ip, hostname: ['sudo', 'su', 'root', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
@@ -15,12 +14,14 @@ else:
     add_if = lambda ip: ['sudo', 'ip', 'a', 'a', 'dev', 'lo', ip]
     add_hosts = lambda ip, hostname: ['sudo', 'su', '-c', 'echo "{} {}" >> /etc/hosts'.format(ip, hostname)]
 
+
 def parse_ports(s):
     """Allows for input of multiple ports such as '8080,8090-8096,9000-9010'.
     """
     ranges = (x.split("-") for x in s.split(","))
     return [i for r in ranges for i in range(int(r[0]), int(r[-1]) + 1)]
-    
+
+
 @click.command()
 @click.argument('stack_name')
 @click.argument('ports')
@@ -63,6 +64,7 @@ def cli(stack_name, ports, jump_host, region, user):
     else:
         ssh_connect = jump_host
     subprocess.call(['ssh'] + opts + [ssh_connect, 'while true; do echo -n .; sleep 60; done'])
+
 
 if __name__ == '__main__':
     cli()
