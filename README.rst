@@ -24,7 +24,8 @@ Installation
 .. code-block:: bash
 
     $ git clone https://github.com/zalando-stups/ssh-tunnels.git
-    $ python setup.py install
+    $ cd ssh-tunnels
+    $ sudo python3 setup.py install # remove "sudo" if you have user-local Python setup
 
 Usage
 =====
