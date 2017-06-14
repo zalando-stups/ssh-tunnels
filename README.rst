@@ -23,9 +23,7 @@ Installation
 
 .. code-block:: bash
 
-    $ git clone https://github.com/zalando-stups/ssh-tunnels.git
-    $ cd ssh-tunnels
-    $ sudo python3 setup.py install # remove "sudo" if you have user-local Python setup
+    $ sudo pip3 install --upgrade stups-ssh-tunnels
 
 Usage
 =====
